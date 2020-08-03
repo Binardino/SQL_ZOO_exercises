@@ -99,7 +99,7 @@ WHERE booking_date BETWEEN '2016-11-25' AND '2016-12-02'
 GROUP BY booking_date
 ORDER BY booking_date
 
-#How many guests? 
+#10. How many guests? 
 #Show the number of guests in the hotel on the night of 2016-11-21. Include all occupants who checked in that day but not those who checked out.
 
 
@@ -108,3 +108,48 @@ FROM booking
 WHERE booking_date <= '2016-11-21'
 AND DATE_ADD(booking_date, INTERVAL nights DAY) > '2016-11-21'
 #using DATE_ADD function to check conditions booking + amount of booked nights
+
+
+#11.Coincidence. 
+#Have two guests with the same surname ever stayed in the hotel on the evening? 
+#Show the last name and both first names. Do not include duplicates.
+
+SELECT DISTINCT
+	t1.last_name, #using SELF join t1 & t2 on same last name
+	t1.first_name,
+	t2.first_name
+FROM
+(SELECT *
+FROM booking
+JOIN guest
+ON booking.guest_id = guest.id) AS t1
+JOIN
+(SELECT *
+FROM booking
+JOIN guest
+ON booking.guest_id = guest.id) AS t2
+ON t1.last_name = t2.last_name
+AND t1.first_name > t2.first_name
+AND (t1.booking_date <= t2.booking_date AND DATE_ADD(t1.booking_date,INTERVAL t1.nights DAY) > t2.booking_date)
+ORDER BY t1.last_name
+
+#12.Check out per floor. 
+#The first digit of the room number indicates the floor – e.g. room 201 is on the 2nd floor. 
+#For each day of the week beginning 2016-11-14 show how many rooms are being vacated that day by floor number. 
+#Show all days in the correct order.
+SELECT
+DATE_ADD(booking_date, INTERVAL nights DAY) AS week_day,
+SUM(CASE WHEN room_no LIKE '1%' THEN 1 ELSE 0 END) AS '1st floor',
+SUM(CASE WHEN room_no LIKE '2%' THEN 1 ELSE 0 END) AS '2nd floor',
+SUM(CASE WHEN room_no LIKE '3%' THEN 1 ELSE 0 END) AS '3rd floor'
+FROM booking
+WHERE DATE_ADD(booking_date, INTERVAL nights DAY) BETWEEN '2016-11-14' AND '2016-11-20'
+GROUP BY week_day
+
+#13
+#Free rooms? List the rooms that are free on the day 25th Nov 2016.
+SELECT id FROM room 
+WHERE id NOT IN
+    (SELECT room_no FROM booking
+     WHERE booking_date <= '2016-11-25'
+     AND DATE_ADD(booking_date, INTERVAL nights DAY) > '2016-11-25')
