@@ -98,3 +98,13 @@ FROM booking
 WHERE booking_date BETWEEN '2016-11-25' AND '2016-12-02'
 GROUP BY booking_date
 ORDER BY booking_date
+
+#How many guests? 
+#Show the number of guests in the hotel on the night of 2016-11-21. Include all occupants who checked in that day but not those who checked out.
+
+
+SELECT SUM(occupants)
+FROM booking
+WHERE booking_date <= '2016-11-21'
+AND DATE_ADD(booking_date, INTERVAL nights DAY) > '2016-11-21'
+#using DATE_ADD function to check conditions booking + amount of booked nights
