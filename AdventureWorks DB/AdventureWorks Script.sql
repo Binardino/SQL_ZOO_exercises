@@ -60,3 +60,31 @@ FROM Customer c
 JOIN SalesOrderHeader h
   ON c.CustomerID = h.CustomerID
 WHERE subtotal+taxamt+freight> 10000;
+
+SELECT companyname, COUNT(d.name)
+FROM SalesOrderHeader a
+JOIN Customer b
+  ON a.CustomerID = b.CustomerID
+JOIN SalesOrderDetail c
+  ON a.SalesOrderID = c.SalesOrderID
+JOIN Product d
+  ON c.ProductID = d.ProductID
+JOIN ProductModel e
+  ON d.ProductModelID = e.ProductModelID 
+WHERE e.name= 'Racing Socks'
+AND CompanyName = 'Riding Cycles'
+GROUP BY CompanyName;
+
+#5
+#Find the number of left racing socks ('Racing Socks, L') ordered by CompanyName 'Riding Cycles'
+SELECT d.name, companyname
+FROM SalesOrderHeader a
+JOIN Customer b
+  ON a.CustomerID = b.CustomerID
+JOIN SalesOrderDetail c
+  ON a.SalesOrderID = c.SalesOrderID
+JOIN Product d
+  ON c.ProductID = d.ProductID
+JOIN ProductModel e
+  ON d.ProductModelID = e.ProductModelID 
+WHERE e.name= 'Racing Socks';
